@@ -4,6 +4,8 @@ import csv
 import datetime
 import pandas as pd
 import locale
+import os
+import sys
 
 
 class MatrizSoDApp:
@@ -30,6 +32,7 @@ class MatrizSoDApp:
         self.tab6 = ttk.Frame(self.tabControl)
         self.tab7 = ttk.Frame(self.tabControl)
         self.tab8 = ttk.Frame(self.tabControl)
+        self.tab9 = ttk.Frame(self.tabControl)
 
         self.tabControl.add(self.tab1, text="Cadastro de Sistema")
         self.tabControl.add(self.tab2, text="Consulta de Sistemas")
@@ -39,6 +42,7 @@ class MatrizSoDApp:
         self.tabControl.add(self.tab6, text="Consulta da Matriz SoD")
         self.tabControl.add(self.tab7, text="Cadastro dos Usuários e Perfis")
         self.tabControl.add(self.tab8, text="Consulta dos Usuários e Perfis")
+        self.tabControl.add(self.tab9, text="Excluir Dados")
 
         self.tabControl.pack(expand=1, fill="both")
 
@@ -50,6 +54,7 @@ class MatrizSoDApp:
         self.criar_conteudo_aba6()
         self.criar_conteudo_aba7()
         self.criar_conteudo_aba8()
+        self.criar_conteudo_aba9()
 
     def formatar_data_hora(self, data):
         locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8")
@@ -113,7 +118,6 @@ class MatrizSoDApp:
         self.tree_consulta.column("#3", width=150)
         self.tree_consulta.pack(padx=10, pady=10)
 
-        # Load data into self.tree_consulta
         self.carregar_dados_csv()
 
     def criar_conteudo_aba3(self):
@@ -187,8 +191,9 @@ class MatrizSoDApp:
 
     def carregar_dados_perfil_csv(self):
         try:
-            with open("./perfil.csv", "r", encoding="utf-8") as arquivo_csv:
-                leitor = csv.reader(arquivo_csv)
+            arquivo_csv = os.path.join(os.path.dirname(sys.executable), "perfil.csv")
+            with open(arquivo_csv, "r", encoding="utf-8") as arquivo:
+                leitor = csv.reader(arquivo)
                 next(leitor)
                 for linha in leitor:
                     data_adicao, codigo, nome, descricao = linha
@@ -206,9 +211,9 @@ class MatrizSoDApp:
 
     def carregar_dados_csv(self):
         try:
-            with open("./sistema.csv", "r", encoding="utf-8") as arquivo_csv:
-                leitor = csv.reader(arquivo_csv)
-                next(leitor)
+            arquivo_csv = os.path.join(os.path.dirname(sys.executable), "sistema.csv")
+            with open(arquivo_csv, "r", encoding="utf-8") as arquivo:
+                leitor = csv.reader(arquivo)
                 for linha in leitor:
                     data_adicao, codigo, nome = linha
                     if data_adicao.strip() and codigo.strip() and nome.strip():
@@ -323,8 +328,11 @@ class MatrizSoDApp:
 
     def carregar_dados_matriz_sod_csv(self):
         try:
-            with open("./matriz_sod.csv", "r", encoding="utf-8") as arquivo_csv:
-                leitor = csv.reader(arquivo_csv)
+            arquivo_csv = os.path.join(
+                os.path.dirname(sys.executable), "matriz_sod.csv"
+            )
+            with open(arquivo_csv, "r", encoding="utf-8") as arquivo:
+                leitor = csv.reader(arquivo)
                 for linha in leitor:
                     codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2 = linha
                     if (
@@ -411,8 +419,9 @@ class MatrizSoDApp:
 
     def carregar_dados_cadastro_csv(self):
         try:
-            with open("./cadastro.csv", "r", encoding="utf-8") as arquivo_csv:
-                leitor = csv.reader(arquivo_csv)
+            arquivo_csv = os.path.join(os.path.dirname(sys.executable), "cadastro.csv")
+            with open(arquivo_csv, "r", encoding="utf-8") as arquivo:
+                leitor = csv.reader(arquivo)
                 for linha in leitor:
                     cpf, codigo_sistema, nome_perfil = linha
                     if cpf.strip() and codigo_sistema.strip() and nome_perfil.strip():
@@ -464,6 +473,47 @@ class MatrizSoDApp:
         except FileNotFoundError:
             pass
         return False
+
+    def criar_conteudo_aba9(self):
+        label = tk.Label(self.tab9, text="Excluir Dados")
+        label.pack(padx=10, pady=10)
+
+        excluir_button = tk.Button(
+            self.tab9,
+            text="Excluir Todos os Dados",
+            command=self.excluir_todos_os_dados,
+        )
+        excluir_button.pack(padx=10, pady=10)
+
+    def excluir_todos_os_dados(self):
+        resposta = messagebox.askyesno(
+            "Confirmar Exclusão",
+            "Todos os dados serão excluídos. Tem certeza que deseja efetuar a exclusão?",
+        )
+
+        if resposta:
+            arquivos_csv = [
+                "./sistema.csv",
+                "./perfil.csv",
+                "./matriz_sod.csv",
+                "./cadastro.csv",
+            ]
+
+            for arquivo in arquivos_csv:
+                self.excluir_dados_csv(arquivo)
+
+            self.limpar_arvore_consulta(self.tree_consulta)
+            self.limpar_arvore_consulta(self.tree_perfil_consulta)
+            self.limpar_arvore_consulta(self.tree_matriz_sod_consulta)
+            self.limpar_arvore_consulta(self.tree_cadastro_consulta)
+
+    def excluir_dados_csv(self, nome_arquivo):
+        if os.path.exists(nome_arquivo):
+            os.remove(nome_arquivo)
+
+    def limpar_arvore_consulta(self, tree):
+        for item in tree.get_children():
+            tree.delete(item)
 
 
 def main():
