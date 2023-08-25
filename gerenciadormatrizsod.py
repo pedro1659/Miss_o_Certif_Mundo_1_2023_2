@@ -439,19 +439,6 @@ class MatrizSoDApp:
 
         self.carregar_dados_cadastro_csv()
 
-    def carregar_dados_cadastro_csv(self):
-        try:
-            with open("./cadastro.csv", "r", encoding="utf-8") as arquivo_csv:
-                leitor = csv.reader(arquivo_csv)
-                for linha in leitor:
-                    cpf, codigo_sistema, nome_perfil = linha
-                    if cpf.strip() and codigo_sistema.strip() and nome_perfil.strip():
-                        self.tree_cadastro_consulta.insert(
-                            "", tk.END, values=(cpf, codigo_sistema, nome_perfil)
-                        )
-        except FileNotFoundError:
-            pass
-
     def verificar_conflitos(self, codigo_sistema, nome_perfil):
         for item in self.tree_matriz_sod_consulta.get_children():
             values = self.tree_matriz_sod_consulta.item(item, "values")
