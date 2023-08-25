@@ -95,7 +95,7 @@ class MatrizSoDApp:
         self.nome_entry.delete(0, tk.END)
 
     def salvar_em_csv(self, codigo, nome, data_adicao):
-        with open("sistema.csv", "a", newline="", encoding="utf-8") as arquivo_csv:
+        with open("./sistema.csv", "a", newline="", encoding="utf-8") as arquivo_csv:
             escritor = csv.writer(arquivo_csv)
             escritor.writerow([data_adicao, codigo, nome])
 
@@ -173,7 +173,7 @@ class MatrizSoDApp:
         self.descricao_entry_perfil.delete(0, tk.END)
 
     def salvar_perfil_em_csv(self, codigo, nome, descricao, data_adicao):
-        with open("perfil.csv", "a", newline="", encoding="utf-8") as arquivo_csv:
+        with open("./perfil.csv", "a", newline="", encoding="utf-8") as arquivo_csv:
             escritor = csv.writer(arquivo_csv)
             escritor.writerow([data_adicao, codigo, nome, descricao])
 
@@ -276,7 +276,7 @@ class MatrizSoDApp:
     def salvar_matriz_sod_em_csv(
         self, codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2
     ):
-        with open("matriz_sod.csv", "a", newline="", encoding="utf-8") as arquivo_csv:
+        with open("./matriz_sod.csv", "a", newline="", encoding="utf-8") as arquivo_csv:
             escritor = csv.writer(arquivo_csv)
             escritor.writerow(
                 [codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2]
@@ -389,7 +389,7 @@ class MatrizSoDApp:
                 self.nome_perfil_entry.delete(0, tk.END)
 
     def salvar_cadastro_em_csv(self, cpf, codigo_sistema, nome_perfil):
-        with open("cadastro.csv", "a", newline="", encoding="utf-8") as arquivo_csv:
+        with open("./cadastro.csv", "a", newline="", encoding="utf-8") as arquivo_csv:
             escritor = csv.writer(arquivo_csv)
             escritor.writerow([cpf, codigo_sistema, nome_perfil])
 
