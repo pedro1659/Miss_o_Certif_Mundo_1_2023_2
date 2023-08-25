@@ -51,11 +51,6 @@ class MatrizSoDApp:
         self.criar_conteudo_aba7()
         self.criar_conteudo_aba8()
 
-        self.carregar_dados_csv()
-        self.carregar_dados_perfil_csv()
-        self.carregar_dados_matriz_sod_csv()
-        self.carregar_dados_cadastro_csv()
-
     def formatar_data_hora(self, data):
         locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8")
         data_obj = datetime.datetime.strptime(data, "%Y-%m-%d %H:%M:%S")
@@ -91,6 +86,10 @@ class MatrizSoDApp:
 
         data_adicao = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.salvar_em_csv(codigo, nome, data_adicao)
+        data_adicao_formatada = self.formatar_data_hora(data_adicao)
+        self.tree_consulta.insert(
+            "", tk.END, values=(data_adicao_formatada, codigo, nome)
+        )
         self.codigo_entry.delete(0, tk.END)
         self.nome_entry.delete(0, tk.END)
 
@@ -103,12 +102,19 @@ class MatrizSoDApp:
         label = tk.Label(self.tab2, text="Consulta de Sistemas")
         label.pack(padx=10, pady=10)
 
-        self.tree = ttk.Treeview(self.tab2, columns=("DataAdicao", "Codigo", "Nome"))
-        self.tree.heading("DataAdicao", text="Data de Adição")
-        self.tree.heading("Codigo", text="Código")
-        self.tree.heading("Nome", text="Nome")
-        self.tree.column("DataAdicao", width=150)
-        self.tree.pack(padx=10, pady=10)
+        self.tree_consulta = ttk.Treeview(
+            self.tab2, columns=("DataAdicao", "Codigo", "Nome")
+        )
+        self.tree_consulta.heading("#1", text="Data de Adição")
+        self.tree_consulta.heading("#2", text="Código")
+        self.tree_consulta.heading("#3", text="Nome")
+        self.tree_consulta.column("#1", width=150)
+        self.tree_consulta.column("#2", width=100)
+        self.tree_consulta.column("#3", width=150)
+        self.tree_consulta.pack(padx=10, pady=10)
+
+        # Load data into self.tree_consulta
+        self.carregar_dados_csv()
 
     def criar_conteudo_aba3(self):
         label = tk.Label(self.tab3, text="Cadastro dos Perfis de Acesso")
@@ -138,18 +144,20 @@ class MatrizSoDApp:
         label = tk.Label(self.tab4, text="Consulta dos Perfis de Acesso")
         label.pack(padx=10, pady=10)
 
-        self.tree_perfil = ttk.Treeview(
+        self.tree_perfil_consulta = ttk.Treeview(
             self.tab4, columns=("Data de Adição", "Código", "Nome", "Descrição")
         )
-        self.tree_perfil.heading("#1", text="Data de Adição")
-        self.tree_perfil.heading("#2", text="Código")
-        self.tree_perfil.heading("#3", text="Nome")
-        self.tree_perfil.heading("#4", text="Descrição")
-        self.tree_perfil.column("#1", width=150)
-        self.tree_perfil.column("#2", width=100)
-        self.tree_perfil.column("#3", width=150)
-        self.tree_perfil.column("#4", width=300)
-        self.tree_perfil.pack(padx=10, pady=10)
+        self.tree_perfil_consulta.heading("#1", text="Data de Adição")
+        self.tree_perfil_consulta.heading("#2", text="Código")
+        self.tree_perfil_consulta.heading("#3", text="Nome")
+        self.tree_perfil_consulta.heading("#4", text="Descrição")
+        self.tree_perfil_consulta.column("#1", width=150)
+        self.tree_perfil_consulta.column("#2", width=100)
+        self.tree_perfil_consulta.column("#3", width=150)
+        self.tree_perfil_consulta.column("#4", width=300)
+        self.tree_perfil_consulta.pack(padx=10, pady=10)
+
+        self.carregar_dados_perfil_csv()
 
     def adicionar_perfil(self):
         codigo = self.codigo_entry_perfil.get()
@@ -162,7 +170,7 @@ class MatrizSoDApp:
 
         data_adicao = datetime.datetime.now().strftime("%d %b %Y %H:%M:%S")
         self.salvar_perfil_em_csv(codigo, nome, descricao, data_adicao)
-        self.tree_perfil.insert(
+        self.tree_perfil_consulta.insert(
             "",
             tk.END,
             values=(data_adicao, codigo, nome, descricao),
@@ -179,7 +187,7 @@ class MatrizSoDApp:
 
     def carregar_dados_perfil_csv(self):
         try:
-            with open("perfil.csv", "r", encoding="utf-8") as arquivo_csv:
+            with open("./perfil.csv", "r", encoding="utf-8") as arquivo_csv:
                 leitor = csv.reader(arquivo_csv)
                 next(leitor)
                 for linha in leitor:
@@ -190,7 +198,7 @@ class MatrizSoDApp:
                         and nome.strip()
                         and descricao.strip()
                     ):
-                        self.tree_perfil.insert(
+                        self.tree_perfil_consulta.insert(
                             "", tk.END, values=(data_adicao, codigo, nome, descricao)
                         )
         except FileNotFoundError:
@@ -198,14 +206,14 @@ class MatrizSoDApp:
 
     def carregar_dados_csv(self):
         try:
-            with open("sistema.csv", "r", encoding="utf-8") as arquivo_csv:
+            with open("./sistema.csv", "r", encoding="utf-8") as arquivo_csv:
                 leitor = csv.reader(arquivo_csv)
                 next(leitor)
                 for linha in leitor:
                     data_adicao, codigo, nome = linha
                     if data_adicao.strip() and codigo.strip() and nome.strip():
                         data_adicao_formatada = self.formatar_data_hora(data_adicao)
-                        self.tree.insert(
+                        self.tree_consulta.insert(
                             "", tk.END, values=(data_adicao_formatada, codigo, nome)
                         )
         except FileNotFoundError:
@@ -273,6 +281,12 @@ class MatrizSoDApp:
         self.codigo_sistema2_entry.delete(0, tk.END)
         self.nome_perfil2_entry.delete(0, tk.END)
 
+        self.tree_matriz_sod_consulta.insert(
+            "",
+            tk.END,
+            values=(codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2),
+        )
+
     def salvar_matriz_sod_em_csv(
         self, codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2
     ):
@@ -286,7 +300,7 @@ class MatrizSoDApp:
         label = tk.Label(self.tab6, text="Consulta da Matriz SoD")
         label.pack(padx=10, pady=10)
 
-        self.tree_matriz_sod = ttk.Treeview(
+        self.tree_matriz_sod_consulta = ttk.Treeview(
             self.tab6,
             columns=(
                 "Código Sistema 1",
@@ -295,19 +309,21 @@ class MatrizSoDApp:
                 "Nome Perfil 2",
             ),
         )
-        self.tree_matriz_sod.heading("#1", text="Código Sistema 1")
-        self.tree_matriz_sod.heading("#2", text="Nome Perfil 1")
-        self.tree_matriz_sod.heading("#3", text="Código Sistema 2")
-        self.tree_matriz_sod.heading("#4", text="Nome Perfil 2")
-        self.tree_matriz_sod.column("#1", width=100)
-        self.tree_matriz_sod.column("#2", width=150)
-        self.tree_matriz_sod.column("#3", width=100)
-        self.tree_matriz_sod.column("#4", width=150)
-        self.tree_matriz_sod.pack(padx=10, pady=10)
+        self.tree_matriz_sod_consulta.heading("#1", text="Código Sistema 1")
+        self.tree_matriz_sod_consulta.heading("#2", text="Nome Perfil 1")
+        self.tree_matriz_sod_consulta.heading("#3", text="Código Sistema 2")
+        self.tree_matriz_sod_consulta.heading("#4", text="Nome Perfil 2")
+        self.tree_matriz_sod_consulta.column("#1", width=100)
+        self.tree_matriz_sod_consulta.column("#2", width=150)
+        self.tree_matriz_sod_consulta.column("#3", width=100)
+        self.tree_matriz_sod_consulta.column("#4", width=150)
+        self.tree_matriz_sod_consulta.pack(padx=10, pady=10)
+
+        self.carregar_dados_matriz_sod_csv()
 
     def carregar_dados_matriz_sod_csv(self):
         try:
-            with open("matriz_sod.csv", "r", encoding="utf-8") as arquivo_csv:
+            with open("./matriz_sod.csv", "r", encoding="utf-8") as arquivo_csv:
                 leitor = csv.reader(arquivo_csv)
                 for linha in leitor:
                     codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2 = linha
@@ -317,7 +333,7 @@ class MatrizSoDApp:
                         and codigo_sistema2.strip()
                         and nome_perfil2.strip()
                     ):
-                        self.tree_matriz_sod.insert(
+                        self.tree_matriz_sod_consulta.insert(
                             "",
                             tk.END,
                             values=(
@@ -369,9 +385,9 @@ class MatrizSoDApp:
 
         perfil_existente = None
 
-        for item in self.tree_cadastro.get_children():
-            if self.tree_cadastro.item(item, "values")[2] == nome_perfil:
-                perfil_existente = self.tree_cadastro.item(item, "values")[2]
+        for item in self.tree_cadastro_consulta.get_children():
+            if self.tree_cadastro_consulta.item(item, "values")[2] == nome_perfil:
+                perfil_existente = self.tree_cadastro_consulta.item(item, "values")[2]
                 break
 
         if perfil_existente:
@@ -381,7 +397,7 @@ class MatrizSoDApp:
                 tk.messagebox.showwarning("Aviso", "Perfil em conflito")
             else:
                 self.salvar_cadastro_em_csv(cpf, codigo_sistema, nome_perfil)
-                self.tree_cadastro.insert(
+                self.tree_cadastro_consulta.insert(
                     "", tk.END, values=(cpf, codigo_sistema, nome_perfil)
                 )
                 self.cpf_entry.delete(0, tk.END)
@@ -395,12 +411,12 @@ class MatrizSoDApp:
 
     def carregar_dados_cadastro_csv(self):
         try:
-            with open("cadastro.csv", "r", encoding="utf-8") as arquivo_csv:
+            with open("./cadastro.csv", "r", encoding="utf-8") as arquivo_csv:
                 leitor = csv.reader(arquivo_csv)
                 for linha in leitor:
                     cpf, codigo_sistema, nome_perfil = linha
                     if cpf.strip() and codigo_sistema.strip() and nome_perfil.strip():
-                        self.tree_cadastro.insert(
+                        self.tree_cadastro_consulta.insert(
                             "", tk.END, values=(cpf, codigo_sistema, nome_perfil)
                         )
         except FileNotFoundError:
@@ -410,48 +426,50 @@ class MatrizSoDApp:
         label = tk.Label(self.tab8, text="Consulta dos Usuários e seus Perfis")
         label.pack(padx=10, pady=10)
 
-        self.tree_cadastro = ttk.Treeview(
+        self.tree_cadastro_consulta = ttk.Treeview(
             self.tab8, columns=("CPF", "Código do Sistema", "Nome do Perfil")
         )
-        self.tree_cadastro.heading("#1", text="CPF")
-        self.tree_cadastro.heading("#2", text="Código do Sistema")
-        self.tree_cadastro.heading("#3", text="Nome do Perfil")
-        self.tree_cadastro.column("#1", width=150)
-        self.tree_cadastro.column("#2", width=150)
-        self.tree_cadastro.column("#3", width=200)
-        self.tree_cadastro.pack(padx=10, pady=10)
+        self.tree_cadastro_consulta.heading("#1", text="CPF")
+        self.tree_cadastro_consulta.heading("#2", text="Código do Sistema")
+        self.tree_cadastro_consulta.heading("#3", text="Nome do Perfil")
+        self.tree_cadastro_consulta.column("#1", width=150)
+        self.tree_cadastro_consulta.column("#2", width=150)
+        self.tree_cadastro_consulta.column("#3", width=200)
+        self.tree_cadastro_consulta.pack(padx=10, pady=10)
+
+        self.carregar_dados_cadastro_csv()
 
     def carregar_dados_cadastro_csv(self):
         try:
-            with open("cadastro.csv", "r", encoding="utf-8") as arquivo_csv:
+            with open("./cadastro.csv", "r", encoding="utf-8") as arquivo_csv:
                 leitor = csv.reader(arquivo_csv)
                 for linha in leitor:
                     cpf, codigo_sistema, nome_perfil = linha
                     if cpf.strip() and codigo_sistema.strip() and nome_perfil.strip():
-                        self.tree_cadastro.insert(
+                        self.tree_cadastro_consulta.insert(
                             "", tk.END, values=(cpf, codigo_sistema, nome_perfil)
                         )
         except FileNotFoundError:
             pass
 
     def verificar_conflitos(self, codigo_sistema, nome_perfil):
-        for item in self.tree_matriz_sod.get_children():
-            values = self.tree_matriz_sod.item(item, "values")
+        for item in self.tree_matriz_sod_consulta.get_children():
+            values = self.tree_matriz_sod_consulta.item(item, "values")
             if values[0] == codigo_sistema and values[1] == nome_perfil:
                 return True
         return False
 
     def verificar_cpf_perfil_conflito(self, cpf, nome_perfil):
-        for item in self.tree_cadastro.get_children():
-            if self.tree_cadastro.item(item, "values")[0] == cpf:
-                perfil_usuario = self.tree_cadastro.item(item, "values")[2]
+        for item in self.tree_cadastro_consulta.get_children():
+            if self.tree_cadastro_consulta.item(item, "values")[0] == cpf:
+                perfil_usuario = self.tree_cadastro_consulta.item(item, "values")[2]
                 if self.verificar_conflito_matriz_sod(nome_perfil, perfil_usuario):
                     return True
         return False
 
     def verificar_conflito_matriz_sod(self, nome_perfil1, nome_perfil2):
         try:
-            with open("matriz_sod.csv", "r", encoding="utf-8") as arquivo_csv:
+            with open("./matriz_sod.csv", "r", encoding="utf-8") as arquivo_csv:
                 leitor = csv.reader(arquivo_csv)
                 for linha in leitor:
                     if (nome_perfil1 in linha) and (nome_perfil2 in linha):
