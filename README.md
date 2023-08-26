@@ -1,6 +1,22 @@
 # Miss_o_Certif_Mundo_1_2023_2
 Projeto referente a missão de certificação do Mundo 1 - Dev Full Stack
 
+O projeto requer que o usuario disponha de uma IDE funcional com python instalado.
+O projeto foi desenvolvido usando o VSCode como IDE.
+Também serao necessarias as seguintes bibliotecas para seu funcionamento:
+import os
+import sys
+import locale
+import tkinter as tk
+from tkinter import ttk, messagebox
+import csv
+import datetime
+import pandas as pd
+Note que algumas dessas bibliotecas ja vem embutidas com o python.
+
+O programa também ja esta pronto para ser convertido em um .exe. Sugiro o cx_Freeze, que também requer instalaçao.
+
+
 Explicações do que é o projeto:
 
 O projeto consiste em um simples programa ou aplicação(.exe) para gerenciamento de Segregação de Funções; ao ser iniciado o programa disponibilizará ao usuario uma interface com abas para adição de dados e a consulta dos dados adicionados e também a verificação de conflitos entre os diferentes perfis de usuarios adicionados (se necessário), o objetivo do programa é:
