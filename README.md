@@ -27,7 +27,7 @@ Consultar esses sistemas em uma aba diferente.
 Cadastrar perfis de acesso com seus respectivos código do sistema, nome do perfil e descrição detalhada do perfil.
 Consultar perfis de acesso em uma aba diferente.
 
-Cadastrar dados na matriz sod, com seus respectivos código do sistema1 e código do sistema, nome do perfil1 e nome do perfil2, onde o cadastro indicará quais perfis serão conflitantes.
+Cadastrar dados na matriz sod, com seus respectivos código do sistema1 e código do sistema2, nome do perfil1 e nome do perfil2, onde o cadastro indicará quais perfis serão conflitantes.
 Consultar perfis conflitantes em uma aba diferente.
 
 Cadastrar os usuarios e seus perfis com seus respectivos CPF,código do sistema e nome do perfil.
