@@ -108,7 +108,7 @@ class MatrizSoDApp:
         label.pack(padx=10, pady=10)
 
         self.tree_consulta = ttk.Treeview(
-            self.tab2, columns=("DataAdicao", "Codigo", "Nome")
+            self.tab2, columns=("DataAdicao", "Codigo", "Nome"), show="headings"
         )
         self.tree_consulta.heading("#1", text="Data de Adição")
         self.tree_consulta.heading("#2", text="Código")
@@ -149,7 +149,7 @@ class MatrizSoDApp:
         label.pack(padx=10, pady=10)
 
         self.tree_perfil_consulta = ttk.Treeview(
-            self.tab4, columns=("Data de Adição", "Código", "Nome", "Descrição")
+            self.tab4, columns=("Data de Adição", "Código", "Nome", "Descrição"), show="headings"
         )
         self.tree_perfil_consulta.heading("#1", text="Data de Adição")
         self.tree_perfil_consulta.heading("#2", text="Código")
