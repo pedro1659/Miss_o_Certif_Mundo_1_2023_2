@@ -1,11 +1,11 @@
+import os
+import sys
+import locale
 import tkinter as tk
 from tkinter import ttk, messagebox
 import csv
 import datetime
 import pandas as pd
-import locale
-import os
-import sys
 
 
 class MatrizSoDApp:
@@ -308,20 +308,24 @@ class MatrizSoDApp:
         self.tree_matriz_sod_consulta = ttk.Treeview(
             self.tab6,
             columns=(
+                "Data de Adição",
                 "Código Sistema 1",
                 "Nome Perfil 1",
                 "Código Sistema 2",
                 "Nome Perfil 2",
             ),
+            show="headings",
         )
-        self.tree_matriz_sod_consulta.heading("#1", text="Código Sistema 1")
-        self.tree_matriz_sod_consulta.heading("#2", text="Nome Perfil 1")
-        self.tree_matriz_sod_consulta.heading("#3", text="Código Sistema 2")
-        self.tree_matriz_sod_consulta.heading("#4", text="Nome Perfil 2")
-        self.tree_matriz_sod_consulta.column("#1", width=100)
+        self.tree_matriz_sod_consulta.heading("#1", text="Datade Adição")
+        self.tree_matriz_sod_consulta.heading("#2", text="Código Sistema 1")
+        self.tree_matriz_sod_consulta.heading("#3", text="Nome Perfil 1")
+        self.tree_matriz_sod_consulta.heading("#4", text="Código Sistema 2")
+        self.tree_matriz_sod_consulta.heading("#5", text="Nome Perfil 2")
+        self.tree_matriz_sod_consulta.column("#1", width=150)
         self.tree_matriz_sod_consulta.column("#2", width=150)
         self.tree_matriz_sod_consulta.column("#3", width=100)
         self.tree_matriz_sod_consulta.column("#4", width=150)
+        self.tree_matriz_sod_consulta.column("#5", width=100)
         self.tree_matriz_sod_consulta.pack(padx=10, pady=10)
 
         self.carregar_dados_matriz_sod_csv()
@@ -436,14 +440,18 @@ class MatrizSoDApp:
         label.pack(padx=10, pady=10)
 
         self.tree_cadastro_consulta = ttk.Treeview(
-            self.tab8, columns=("CPF", "Código do Sistema", "Nome do Perfil")
+            self.tab8,
+            columns=("Data de Adição", "CPF", "Código do Sistema", "Nome do Perfil"),
+            show="headings",
         )
-        self.tree_cadastro_consulta.heading("#1", text="CPF")
-        self.tree_cadastro_consulta.heading("#2", text="Código do Sistema")
-        self.tree_cadastro_consulta.heading("#3", text="Nome do Perfil")
+        self.tree_cadastro_consulta.heading("#1", text="Data de Adição")
+        self.tree_cadastro_consulta.heading("#2", text="CPF")
+        self.tree_cadastro_consulta.heading("#3", text="Código do Sistema")
+        self.tree_cadastro_consulta.heading("#4", text="Nome do Perfil")
         self.tree_cadastro_consulta.column("#1", width=150)
         self.tree_cadastro_consulta.column("#2", width=150)
-        self.tree_cadastro_consulta.column("#3", width=200)
+        self.tree_cadastro_consulta.column("#3", width=150)
+        self.tree_cadastro_consulta.column("#4", width=200)
         self.tree_cadastro_consulta.pack(padx=10, pady=10)
 
         self.carregar_dados_cadastro_csv()
