@@ -24,6 +24,8 @@ class MatrizSoDApp:
 
         self.style.map("Treeview", background=[("alternate", "#f2f2f2")])
 
+        self.script_dir = os.path.dirname(os.path.abspath(__file__))
+
         self.tab1 = ttk.Frame(self.tabControl)
         self.tab2 = ttk.Frame(self.tabControl)
         self.tab3 = ttk.Frame(self.tabControl)
@@ -99,7 +101,8 @@ class MatrizSoDApp:
         self.nome_entry.delete(0, tk.END)
 
     def salvar_em_csv(self, codigo, nome, data_adicao):
-        with open("./sistema.csv", "a", newline="", encoding="utf-8") as arquivo_csv:
+        csv_path = os.path.join(self.script_dir, "sistema.csv")
+        with open(csv_path, "a", newline="", encoding="utf-8") as arquivo_csv:
             escritor = csv.writer(arquivo_csv)
             escritor.writerow([data_adicao, codigo, nome])
 
@@ -149,7 +152,9 @@ class MatrizSoDApp:
         label.pack(padx=10, pady=10)
 
         self.tree_perfil_consulta = ttk.Treeview(
-            self.tab4, columns=("Data de Adição", "Código", "Nome", "Descrição"), show="headings"
+            self.tab4,
+            columns=("Data de Adição", "Código", "Nome", "Descrição"),
+            show="headings",
         )
         self.tree_perfil_consulta.heading("#1", text="Data de Adição")
         self.tree_perfil_consulta.heading("#2", text="Código")
@@ -185,16 +190,16 @@ class MatrizSoDApp:
         self.descricao_entry_perfil.delete(0, tk.END)
 
     def salvar_perfil_em_csv(self, codigo, nome, descricao, data_adicao):
-        with open("./perfil.csv", "a", newline="", encoding="utf-8") as arquivo_csv:
+        csv_path = os.path.join(self.script_dir, "perfil.csv")
+        with open(csv_path, "a", newline="", encoding="utf-8") as arquivo_csv:
             escritor = csv.writer(arquivo_csv)
             escritor.writerow([data_adicao, codigo, nome, descricao])
 
     def carregar_dados_perfil_csv(self):
         try:
-            arquivo_csv = os.path.join(os.path.dirname(sys.executable), "perfil.csv")
-            with open(arquivo_csv, "r", encoding="utf-8") as arquivo:
+            csv_path = os.path.join(self.script_dir, "perfil.csv")
+            with open(csv_path, "r", encoding="utf-8") as arquivo:
                 leitor = csv.reader(arquivo)
-                next(leitor)
                 for linha in leitor:
                     data_adicao, codigo, nome, descricao = linha
                     if (
@@ -204,15 +209,17 @@ class MatrizSoDApp:
                         and descricao.strip()
                     ):
                         self.tree_perfil_consulta.insert(
-                            "", tk.END, values=(data_adicao, codigo, nome, descricao)
+                            "",
+                            tk.END,
+                            values=(data_adicao, codigo, nome, descricao),
                         )
         except FileNotFoundError:
             pass
 
     def carregar_dados_csv(self):
         try:
-            arquivo_csv = os.path.join(os.path.dirname(sys.executable), "sistema.csv")
-            with open(arquivo_csv, "r", encoding="utf-8") as arquivo:
+            csv_path = os.path.join(self.script_dir, "sistema.csv")
+            with open(csv_path, "r", encoding="utf-8") as arquivo:
                 leitor = csv.reader(arquivo)
                 for linha in leitor:
                     data_adicao, codigo, nome = linha
@@ -278,27 +285,43 @@ class MatrizSoDApp:
             tk.messagebox.showwarning("Aviso", "Por favor, preencha todos os campos.")
             return
 
-        self.salvar_matriz_sod_em_csv(
-            codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2
-        )
-        self.codigo_sistema1_entry.delete(0, tk.END)
-        self.nome_perfil1_entry.delete(0, tk.END)
-        self.codigo_sistema2_entry.delete(0, tk.END)
-        self.nome_perfil2_entry.delete(0, tk.END)
+        else:
+            data_adicao = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.salvar_matriz_sod_em_csv(
+                codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2
+            )
+            self.tree_matriz_sod_consulta.insert(
+                "",
+                tk.END,
+                values=(
+                    data_adicao,
+                    codigo_sistema1,
+                    nome_perfil1,
+                    codigo_sistema2,
+                    nome_perfil2,
+                ),
+            )
 
-        self.tree_matriz_sod_consulta.insert(
-            "",
-            tk.END,
-            values=(codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2),
-        )
+            self.codigo_sistema1_entry.delete(0, tk.END)
+            self.nome_perfil1_entry.delete(0, tk.END)
+            self.codigo_sistema2_entry.delete(0, tk.END)
+            self.nome_perfil2_entry.delete(0, tk.END)
 
     def salvar_matriz_sod_em_csv(
         self, codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2
     ):
-        with open("./matriz_sod.csv", "a", newline="", encoding="utf-8") as arquivo_csv:
+        data_adicao = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        csv_path = os.path.join(self.script_dir, "matriz_sod.csv")
+        with open(csv_path, "a", newline="", encoding="utf-8") as arquivo_csv:
             escritor = csv.writer(arquivo_csv)
             escritor.writerow(
-                [codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2]
+                [
+                    data_adicao,
+                    codigo_sistema1,
+                    nome_perfil1,
+                    codigo_sistema2,
+                    nome_perfil2,
+                ]
             )
 
     def criar_conteudo_aba6(self):
@@ -332,29 +355,36 @@ class MatrizSoDApp:
 
     def carregar_dados_matriz_sod_csv(self):
         try:
-            arquivo_csv = os.path.join(
-                os.path.dirname(sys.executable), "matriz_sod.csv"
-            )
-            with open(arquivo_csv, "r", encoding="utf-8") as arquivo:
+            csv_path = os.path.join(self.script_dir, "matriz_sod.csv")
+            with open(csv_path, "r", encoding="utf-8") as arquivo:
                 leitor = csv.reader(arquivo)
                 for linha in leitor:
-                    codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2 = linha
-                    if (
-                        codigo_sistema1.strip()
-                        and nome_perfil1.strip()
-                        and codigo_sistema2.strip()
-                        and nome_perfil2.strip()
-                    ):
-                        self.tree_matriz_sod_consulta.insert(
-                            "",
-                            tk.END,
-                            values=(
-                                codigo_sistema1,
-                                nome_perfil1,
-                                codigo_sistema2,
-                                nome_perfil2,
-                            ),
-                        )
+                    if len(linha) == 5:
+                        (
+                            data_adicao,
+                            codigo_sistema1,
+                            nome_perfil1,
+                            codigo_sistema2,
+                            nome_perfil2,
+                        ) = linha
+                        if (
+                            data_adicao.strip()
+                            and codigo_sistema1.strip()
+                            and nome_perfil1.strip()
+                            and codigo_sistema2.strip()
+                            and nome_perfil2.strip()
+                        ):
+                            self.tree_matriz_sod_consulta.insert(
+                                "",
+                                tk.END,
+                                values=(
+                                    data_adicao,
+                                    codigo_sistema1,
+                                    nome_perfil1,
+                                    codigo_sistema2,
+                                    nome_perfil2,
+                                ),
+                            )
         except FileNotFoundError:
             pass
 
@@ -398,8 +428,8 @@ class MatrizSoDApp:
         perfil_existente = None
 
         for item in self.tree_cadastro_consulta.get_children():
-            if self.tree_cadastro_consulta.item(item, "values")[2] == nome_perfil:
-                perfil_existente = self.tree_cadastro_consulta.item(item, "values")[2]
+            if self.tree_cadastro_consulta.item(item, "values")[3] == nome_perfil:
+                perfil_existente = self.tree_cadastro_consulta.item(item, "values")[3]
                 break
 
         if perfil_existente:
@@ -408,29 +438,40 @@ class MatrizSoDApp:
             if self.verificar_cpf_perfil_conflito(cpf, nome_perfil):
                 tk.messagebox.showwarning("Aviso", "Perfil em conflito")
             else:
-                self.salvar_cadastro_em_csv(cpf, codigo_sistema, nome_perfil)
+                data_adicao = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self.salvar_cadastro_em_csv(
+                    cpf, codigo_sistema, nome_perfil, data_adicao
+                )
                 self.tree_cadastro_consulta.insert(
-                    "", tk.END, values=(cpf, codigo_sistema, nome_perfil)
+                    "", tk.END, values=(data_adicao, cpf, codigo_sistema, nome_perfil)
                 )
                 self.cpf_entry.delete(0, tk.END)
                 self.codigo_sistema_entry.delete(0, tk.END)
                 self.nome_perfil_entry.delete(0, tk.END)
 
-    def salvar_cadastro_em_csv(self, cpf, codigo_sistema, nome_perfil):
-        with open("./cadastro.csv", "a", newline="", encoding="utf-8") as arquivo_csv:
+    def salvar_cadastro_em_csv(self, cpf, codigo_sistema, nome_perfil, data_adicao):
+        csv_path = os.path.join(self.script_dir, "cadastro.csv")
+        with open(csv_path, "a", newline="", encoding="utf-8") as arquivo_csv:
             escritor = csv.writer(arquivo_csv)
-            escritor.writerow([cpf, codigo_sistema, nome_perfil])
+            escritor.writerow([data_adicao, cpf, codigo_sistema, nome_perfil])
 
     def carregar_dados_cadastro_csv(self):
         try:
-            arquivo_csv = os.path.join(os.path.dirname(sys.executable), "cadastro.csv")
-            with open(arquivo_csv, "r", encoding="utf-8") as arquivo:
+            csv_path = os.path.join(self.script_dir, "cadastro.csv")
+            with open(csv_path, "r", encoding="utf-8") as arquivo:
                 leitor = csv.reader(arquivo)
                 for linha in leitor:
-                    cpf, codigo_sistema, nome_perfil = linha
-                    if cpf.strip() and codigo_sistema.strip() and nome_perfil.strip():
+                    data_adicao, cpf, codigo_sistema, nome_perfil = linha
+                    if (
+                        data_adicao.strip()
+                        and cpf.strip()
+                        and codigo_sistema.strip()
+                        and nome_perfil.strip()
+                    ):
                         self.tree_cadastro_consulta.insert(
-                            "", tk.END, values=(cpf, codigo_sistema, nome_perfil)
+                            "",
+                            tk.END,
+                            values=(data_adicao, cpf, codigo_sistema, nome_perfil),
                         )
         except FileNotFoundError:
             pass
@@ -459,14 +500,14 @@ class MatrizSoDApp:
     def verificar_conflitos(self, codigo_sistema, nome_perfil):
         for item in self.tree_matriz_sod_consulta.get_children():
             values = self.tree_matriz_sod_consulta.item(item, "values")
-            if values[0] == codigo_sistema and values[1] == nome_perfil:
+            if values[1] == codigo_sistema and values[2] == nome_perfil:
                 return True
         return False
 
     def verificar_cpf_perfil_conflito(self, cpf, nome_perfil):
         for item in self.tree_cadastro_consulta.get_children():
-            if self.tree_cadastro_consulta.item(item, "values")[0] == cpf:
-                perfil_usuario = self.tree_cadastro_consulta.item(item, "values")[2]
+            if self.tree_cadastro_consulta.item(item, "values")[1] == cpf:
+                perfil_usuario = self.tree_cadastro_consulta.item(item, "values")[3]
                 if self.verificar_conflito_matriz_sod(nome_perfil, perfil_usuario):
                     return True
         return False
@@ -501,27 +542,37 @@ class MatrizSoDApp:
 
         if resposta:
             arquivos_csv = [
-                "./sistema.csv",
-                "./perfil.csv",
-                "./matriz_sod.csv",
-                "./cadastro.csv",
+                "sistema.csv",
+                "perfil.csv",
+                "matriz_sod.csv",
+                "cadastro.csv",
             ]
 
             for arquivo in arquivos_csv:
-                self.excluir_dados_csv(arquivo)
+                csv_path = os.path.join(self.script_dir, arquivo)
+                self.excluir_dados_csv(csv_path)
 
             self.limpar_arvore_consulta(self.tree_consulta)
             self.limpar_arvore_consulta(self.tree_perfil_consulta)
             self.limpar_arvore_consulta(self.tree_matriz_sod_consulta)
             self.limpar_arvore_consulta(self.tree_cadastro_consulta)
 
-    def excluir_dados_csv(self, nome_arquivo):
-        if os.path.exists(nome_arquivo):
-            os.remove(nome_arquivo)
+    def excluir_dados_csv(self, csv_path):
+        if os.path.exists(csv_path):
+            os.remove(csv_path)
 
     def limpar_arvore_consulta(self, tree):
         for item in tree.get_children():
             tree.delete(item)
+
+    def cleanup_temporary_files(self):
+        temp_files = ["sistema.csv", "perfil.csv", "matriz_sod.csv", "cadastro.csv"]
+        for file_name in temp_files:
+            file_path = os.path.join(self.script_dir, file_name)
+            if os.path.exists(file_path):
+                with open(file_path, "r") as file:
+                    pass
+                os.remove(file_path)
 
 
 def main():
