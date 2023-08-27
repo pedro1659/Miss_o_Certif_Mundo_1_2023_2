@@ -15,17 +15,23 @@ class MatrizSoDApp:
     # porém tentei minimizar o código que já está extenso e deixar tudo em um lugar só.
     def __init__(self, root):
         self.root = root
-        self.root.title("Aplicação Matriz SoD")
+        self.root.title("Matriz SoD")
 
         self.tabcontrol = ttk.Notebook(self.root)
+        self.tabcontrol.pack(expand=1, fill="both")
 
         self.style = ttk.Style()
         self.style.theme_use("clam")
         self.style.configure("Treeview", rowheight=25, font=("Arial", 10))
         self.style.configure("Treeview.Heading", font=("Arial", 10, "bold"))
-        self.style.map("Treeview", background=[("alternate", "#f2f2f2")])
+        self.style.map(
+            "mystyle.Treeview",
+            background=[("selected", "#0000FF"), ("!selected", "#FFFFFF")],
+        )
 
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
+
+        root.bind("<Return>", self.executar_acao_enter)
 
         self.tab1 = ttk.Frame(self.tabcontrol)
         self.tab2 = ttk.Frame(self.tabcontrol)
@@ -47,8 +53,6 @@ class MatrizSoDApp:
         self.tabcontrol.add(self.tab8, text="Consulta dos Usuários e Perfis")
         self.tabcontrol.add(self.tab9, text="Excluir Dados")
 
-        self.tabcontrol.pack(expand=1, fill="both")
-
         self.criar_conteudo_aba1()
         self.criar_conteudo_aba2()
         self.criar_conteudo_aba3()
@@ -66,6 +70,19 @@ class MatrizSoDApp:
         data_obj = datetime.datetime.strptime(data, "%Y-%m-%d %H:%M:%S")
         data_formatada = data_obj.strftime("%d %b %Y %H:%M:%S")
         return data_formatada
+
+    def executar_acao_enter(self, _):
+        """Ao pressionar enter nas abas de cadastro, os dados são inseridos."""
+        # Verificar a aba atual e chamar a função correspondente
+        current_tab = self.tabcontrol.index(self.tabcontrol.select())
+        if current_tab == 0:
+            self.adicionar_sistema()
+        elif current_tab == 2:
+            self.adicionar_perfil()
+        elif current_tab == 4:
+            self.adicionar_perfis_conflitantes()
+        elif current_tab == 6:
+            self.adicionar_cadastro()
 
     def criar_conteudo_aba1(self):
         """Aba Cadastro de Sistema"""
@@ -96,14 +113,25 @@ class MatrizSoDApp:
             tk.messagebox.showwarning("Aviso", "Por favor, preencha todos os campos.")
             return
 
-        data_adicao = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.salvar_em_csv(codigo, nome, data_adicao)
-        data_adicao_formatada = self.formatar_data_hora(data_adicao)
-        self.tree_consulta.insert(
-            "", tk.END, values=(data_adicao_formatada, codigo, nome)
-        )
-        self.codigo_entry.delete(0, tk.END)
-        self.nome_entry.delete(0, tk.END)
+        sistema_existente = None
+        for item in self.tree_consulta.get_children():
+            if self.tree_consulta.item(item, "values")[1] == codigo:
+                sistema_existente = self.tree_consulta.item(item, "values")[1]
+                break
+
+        if sistema_existente:
+            tk.messagebox.showwarning(
+                "Aviso", f"O sistema {sistema_existente} já foi adicionado."
+            )
+        else:
+            data_adicao = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.salvar_em_csv(codigo, nome, data_adicao)
+            data_adicao_formatada = self.formatar_data_hora(data_adicao)
+            self.tree_consulta.insert(
+                "", tk.END, values=(data_adicao_formatada, codigo, nome)
+            )
+            self.codigo_entry.delete(0, tk.END)
+            self.nome_entry.delete(0, tk.END)
 
     def salvar_em_csv(self, codigo, nome, data_adicao):
         """Salva os dados inseridos na aba1 através adicionar_sistema em sistema.csv."""
@@ -187,17 +215,25 @@ class MatrizSoDApp:
             tk.messagebox.showwarning("Aviso", "Por favor, preencha todos os campos.")
             return
 
-        data_adicao = datetime.datetime.now().strftime("%d %b %Y %H:%M:%S")
-        self.salvar_perfil_em_csv(codigo, nome, descricao, data_adicao)
-        self.tree_perfil_consulta.insert(
-            "",
-            tk.END,
-            values=(data_adicao, codigo, nome, descricao),
-        )
+        perfil_existente = None
+        for item in self.tree_perfil_consulta.get_children():
+            if self.tree_perfil_consulta.item(item, "values")[1] == codigo:
+                perfil_existente = self.tree_perfil_consulta.item(item, "values")[1]
+                break
 
-        self.codigo_entry_perfil.delete(0, tk.END)
-        self.nome_entry_perfil.delete(0, tk.END)
-        self.descricao_entry_perfil.delete(0, tk.END)
+        if perfil_existente:
+            tk.messagebox.showwarning(
+                "Aviso", f"O perfil {perfil_existente} já foi adicionado."
+            )
+        else:
+            data_adicao = datetime.datetime.now().strftime("%d %b %Y %H:%M:%S")
+            self.salvar_perfil_em_csv(codigo, nome, descricao, data_adicao)
+            self.tree_perfil_consulta.insert(
+                "", tk.END, values=(data_adicao, codigo, nome, descricao)
+            )
+            self.codigo_entry_perfil.delete(0, tk.END)
+            self.nome_entry_perfil.delete(0, tk.END)
+            self.descricao_entry_perfil.delete(0, tk.END)
 
     def salvar_perfil_em_csv(self, codigo, nome, descricao, data_adicao):
         """Salva os dados inseridos na aba3 através adicionar_perfil em perfil.csv."""
@@ -295,27 +331,39 @@ class MatrizSoDApp:
             tk.messagebox.showwarning("Aviso", "Por favor, preencha todos os campos.")
             return
 
-        data_adicao = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        perfis_conflitantes_existem = False
+        for item in self.tree_matriz_sod_consulta.get_children():
+            values = self.tree_matriz_sod_consulta.item(item, "values")
+            if (values[1] == codigo_sistema1 and values[2] == nome_perfil1) or (
+                values[3] == codigo_sistema2 and values[4] == nome_perfil2
+            ):
+                perfis_conflitantes_existem = True
+                break
 
-        self.salvar_matriz_sod_em_csv(
-            codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2
-        )
-        self.tree_matriz_sod_consulta.insert(
-            "",
-            tk.END,
-            values=(
-                data_adicao,
-                codigo_sistema1,
-                nome_perfil1,
-                codigo_sistema2,
-                nome_perfil2,
-            ),
-        )
-
-        self.codigo_sistema1_entry.delete(0, tk.END)
-        self.nome_perfil1_entry.delete(0, tk.END)
-        self.codigo_sistema2_entry.delete(0, tk.END)
-        self.nome_perfil2_entry.delete(0, tk.END)
+        if perfis_conflitantes_existem:
+            tk.messagebox.showwarning(
+                "Aviso", "Os perfis conflitantes já foram adicionados."
+            )
+        else:
+            data_adicao = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.salvar_matriz_sod_em_csv(
+                codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2
+            )
+            self.tree_matriz_sod_consulta.insert(
+                "",
+                tk.END,
+                values=(
+                    data_adicao,
+                    codigo_sistema1,
+                    nome_perfil1,
+                    codigo_sistema2,
+                    nome_perfil2,
+                ),
+            )
+            self.codigo_sistema1_entry.delete(0, tk.END)
+            self.nome_perfil1_entry.delete(0, tk.END)
+            self.codigo_sistema2_entry.delete(0, tk.END)
+            self.nome_perfil2_entry.delete(0, tk.END)
 
     def salvar_matriz_sod_em_csv(
         self, codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2
@@ -441,15 +489,21 @@ class MatrizSoDApp:
             tk.messagebox.showwarning("Aviso", "Por favor, preencha todos os campos.")
             return
 
-        perfil_existente = None
-
+        cadastro_existente = None
         for item in self.tree_cadastro_consulta.get_children():
-            if self.tree_cadastro_consulta.item(item, "values")[3] == nome_perfil:
-                perfil_existente = self.tree_cadastro_consulta.item(item, "values")[3]
+            values = self.tree_cadastro_consulta.item(item, "values")
+            if (
+                values[1] == cpf
+                and values[2] == codigo_sistema
+                and values[3] == nome_perfil
+            ):
+                cadastro_existente = values
                 break
 
-        if perfil_existente:
-            tk.messagebox.showwarning("Aviso", "Cadastro já existe")
+        if cadastro_existente:
+            tk.messagebox.showwarning(
+                "Aviso", f"O cadastro {cadastro_existente} já foi adicionado."
+            )
         else:
             if self.verificar_cpf_perfil_conflito(cpf, nome_perfil):
                 tk.messagebox.showwarning("Aviso", "Perfil em conflito")
