@@ -1,5 +1,21 @@
-# Miss_o_Certif_Mundo_1_2023_2
+# Missão Certificação Mundo 1
 Projeto referente a missão de certificação do Mundo 1 - Dev Full Stack
+
+O projeto requer que o usuario disponha de uma IDE funcional com python instalado.
+O projeto foi desenvolvido usando o VSCode como IDE.
+Também serao necessarias as seguintes bibliotecas para seu funcionamento:
+import os
+import sys
+import locale
+import tkinter as tk
+from tkinter import ttk, messagebox
+import csv
+import datetime
+import pandas as pd
+Note que algumas dessas bibliotecas ja vem embutidas com o python.
+
+O programa também ja esta pronto para ser convertido em um .exe. Sugiro o cx_Freeze, que também requer instalaçao.
+
 
 Explicações do que é o projeto:
 
@@ -11,7 +27,7 @@ Consultar esses sistemas em uma aba diferente.
 Cadastrar perfis de acesso com seus respectivos código do sistema, nome do perfil e descrição detalhada do perfil.
 Consultar perfis de acesso em uma aba diferente.
 
-Cadastrar dados na matriz sod, com seus respectivos código do sistema1 e código do sistema, nome do perfil1 e nome do perfil2, onde o cadastro indicará quais perfis serão conflitantes.
+Cadastrar dados na matriz sod, com seus respectivos código do sistema1 e código do sistema2, nome do perfil1 e nome do perfil2, onde o cadastro indicará quais perfis serão conflitantes.
 Consultar perfis conflitantes em uma aba diferente.
 
 Cadastrar os usuarios e seus perfis com seus respectivos CPF,código do sistema e nome do perfil.
