@@ -21,11 +21,8 @@ class MatrizSoDApp:
 
         self.style = ttk.Style()
         self.style.theme_use("clam")
-
         self.style.configure("Treeview", rowheight=25, font=("Arial", 10))
-
         self.style.configure("Treeview.Heading", font=("Arial", 10, "bold"))
-
         self.style.map("Treeview", background=[("alternate", "#f2f2f2")])
 
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -604,8 +601,6 @@ class MatrizSoDApp:
         for file_name in temp_files:
             file_path = os.path.join(self.script_dir, file_name)
             if os.path.exists(file_path):
-                with open(file_path, "r", encoding="utf-8") as file:
-                    pass
                 os.remove(file_path)
 
 
