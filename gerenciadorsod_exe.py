@@ -1,19 +1,23 @@
+"""App para genrenciar uma matriz SoD"""
+
 import os
-import sys
 import locale
 import tkinter as tk
 from tkinter import ttk, messagebox
 import csv
 import datetime
-import pandas as pd
 
 
 class MatrizSoDApp:
+    """Responsável por criar a interface gráfica e gerenciar os diferentes aspectos da matriz SoD"""
+
+    # Por padrão eu normalmente prefiro utilizar menos atributos para uma classe,
+    # porém tentei minimizar o código que já está extenso e deixar tudo em um lugar só.
     def __init__(self, root):
         self.root = root
         self.root.title("Aplicação Matriz SoD")
 
-        self.tabControl = ttk.Notebook(self.root)
+        self.tabcontrol = ttk.Notebook(self.root)
 
         self.style = ttk.Style()
         self.style.theme_use("clam")
@@ -26,27 +30,27 @@ class MatrizSoDApp:
 
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
 
-        self.tab1 = ttk.Frame(self.tabControl)
-        self.tab2 = ttk.Frame(self.tabControl)
-        self.tab3 = ttk.Frame(self.tabControl)
-        self.tab4 = ttk.Frame(self.tabControl)
-        self.tab5 = ttk.Frame(self.tabControl)
-        self.tab6 = ttk.Frame(self.tabControl)
-        self.tab7 = ttk.Frame(self.tabControl)
-        self.tab8 = ttk.Frame(self.tabControl)
-        self.tab9 = ttk.Frame(self.tabControl)
+        self.tab1 = ttk.Frame(self.tabcontrol)
+        self.tab2 = ttk.Frame(self.tabcontrol)
+        self.tab3 = ttk.Frame(self.tabcontrol)
+        self.tab4 = ttk.Frame(self.tabcontrol)
+        self.tab5 = ttk.Frame(self.tabcontrol)
+        self.tab6 = ttk.Frame(self.tabcontrol)
+        self.tab7 = ttk.Frame(self.tabcontrol)
+        self.tab8 = ttk.Frame(self.tabcontrol)
+        self.tab9 = ttk.Frame(self.tabcontrol)
 
-        self.tabControl.add(self.tab1, text="Cadastro de Sistema")
-        self.tabControl.add(self.tab2, text="Consulta de Sistemas")
-        self.tabControl.add(self.tab3, text="Cadastro dos Perfis de Acesso")
-        self.tabControl.add(self.tab4, text="Consulta dos Perfis de Acesso")
-        self.tabControl.add(self.tab5, text="Cadastro da Matriz SoD")
-        self.tabControl.add(self.tab6, text="Consulta da Matriz SoD")
-        self.tabControl.add(self.tab7, text="Cadastro dos Usuários e Perfis")
-        self.tabControl.add(self.tab8, text="Consulta dos Usuários e Perfis")
-        self.tabControl.add(self.tab9, text="Excluir Dados")
+        self.tabcontrol.add(self.tab1, text="Cadastro de Sistema")
+        self.tabcontrol.add(self.tab2, text="Consulta de Sistemas")
+        self.tabcontrol.add(self.tab3, text="Cadastro dos Perfis de Acesso")
+        self.tabcontrol.add(self.tab4, text="Consulta dos Perfis de Acesso")
+        self.tabcontrol.add(self.tab5, text="Cadastro da Matriz SoD")
+        self.tabcontrol.add(self.tab6, text="Consulta da Matriz SoD")
+        self.tabcontrol.add(self.tab7, text="Cadastro dos Usuários e Perfis")
+        self.tabcontrol.add(self.tab8, text="Consulta dos Usuários e Perfis")
+        self.tabcontrol.add(self.tab9, text="Excluir Dados")
 
-        self.tabControl.pack(expand=1, fill="both")
+        self.tabcontrol.pack(expand=1, fill="both")
 
         self.criar_conteudo_aba1()
         self.criar_conteudo_aba2()
@@ -59,12 +63,15 @@ class MatrizSoDApp:
         self.criar_conteudo_aba9()
 
     def formatar_data_hora(self, data):
+        """Formata data e hora"""
+        # Utilizado na Treeview, abas 2, 4, 6, 8.
         locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8")
         data_obj = datetime.datetime.strptime(data, "%Y-%m-%d %H:%M:%S")
         data_formatada = data_obj.strftime("%d %b %Y %H:%M:%S")
         return data_formatada
 
     def criar_conteudo_aba1(self):
+        """Aba Cadastro de Sistema"""
         label = tk.Label(self.tab1, text="Cadastro de Sistemas")
         label.pack(padx=10, pady=10)
 
@@ -84,6 +91,7 @@ class MatrizSoDApp:
         adicionar_button.pack(padx=10, pady=10)
 
     def adicionar_sistema(self):
+        """Botão Adicionar Sistema"""
         codigo = self.codigo_entry.get()
         nome = self.nome_entry.get()
 
@@ -101,12 +109,14 @@ class MatrizSoDApp:
         self.nome_entry.delete(0, tk.END)
 
     def salvar_em_csv(self, codigo, nome, data_adicao):
+        """Salva os dados inseridos na aba1 através adicionar_sistema em sistema.csv."""
         csv_path = os.path.join(self.script_dir, "sistema.csv")
         with open(csv_path, "a", newline="", encoding="utf-8") as arquivo_csv:
             escritor = csv.writer(arquivo_csv)
             escritor.writerow([data_adicao, codigo, nome])
 
     def criar_conteudo_aba2(self):
+        """Aba Consulta de Sistema"""
         label = tk.Label(self.tab2, text="Consulta de Sistemas")
         label.pack(padx=10, pady=10)
 
@@ -124,6 +134,7 @@ class MatrizSoDApp:
         self.carregar_dados_csv()
 
     def criar_conteudo_aba3(self):
+        """Aba Cadastro dos Perfis"""
         label = tk.Label(self.tab3, text="Cadastro dos Perfis de Acesso")
         label.pack(padx=10, pady=10)
 
@@ -148,6 +159,7 @@ class MatrizSoDApp:
         adicionar_button.pack(padx=10, pady=10)
 
     def criar_conteudo_aba4(self):
+        """Aba Consulta dos Perfis de Acesso"""
         label = tk.Label(self.tab4, text="Consulta dos Perfis de Acesso")
         label.pack(padx=10, pady=10)
 
@@ -169,6 +181,7 @@ class MatrizSoDApp:
         self.carregar_dados_perfil_csv()
 
     def adicionar_perfil(self):
+        """Botão Adicionar Perfil"""
         codigo = self.codigo_entry_perfil.get()
         nome = self.nome_entry_perfil.get()
         descricao = self.descricao_entry_perfil.get()
@@ -190,12 +203,14 @@ class MatrizSoDApp:
         self.descricao_entry_perfil.delete(0, tk.END)
 
     def salvar_perfil_em_csv(self, codigo, nome, descricao, data_adicao):
+        """Salva os dados inseridos na aba3 através adicionar_perfil em perfil.csv."""
         csv_path = os.path.join(self.script_dir, "perfil.csv")
         with open(csv_path, "a", newline="", encoding="utf-8") as arquivo_csv:
             escritor = csv.writer(arquivo_csv)
             escritor.writerow([data_adicao, codigo, nome, descricao])
 
     def carregar_dados_perfil_csv(self):
+        """Carrega os dados inseridos em perfil.csv ao iniciar o programa"""
         try:
             csv_path = os.path.join(self.script_dir, "perfil.csv")
             with open(csv_path, "r", encoding="utf-8") as arquivo:
@@ -217,6 +232,7 @@ class MatrizSoDApp:
             pass
 
     def carregar_dados_csv(self):
+        """Carrega os dados inseridos em sistema.csv ao iniciar o programa"""
         try:
             csv_path = os.path.join(self.script_dir, "sistema.csv")
             with open(csv_path, "r", encoding="utf-8") as arquivo:
@@ -232,6 +248,7 @@ class MatrizSoDApp:
             pass
 
     def criar_conteudo_aba5(self):
+        """Aba Cadastro da Matriz SoD"""
         label = tk.Label(self.tab5, text="Cadastro da Matriz SoD")
         label.pack(padx=10, pady=10)
 
@@ -271,45 +288,43 @@ class MatrizSoDApp:
         adicionar_perfis_button.pack(padx=10, pady=10)
 
     def adicionar_perfis_conflitantes(self):
+        """Botão Adicionar Perfil"""
         codigo_sistema1 = self.codigo_sistema1_entry.get()
         nome_perfil1 = self.nome_perfil1_entry.get()
         codigo_sistema2 = self.codigo_sistema2_entry.get()
         nome_perfil2 = self.nome_perfil2_entry.get()
 
-        if (
-            not codigo_sistema1
-            or not nome_perfil1
-            or not codigo_sistema2
-            or not nome_perfil2
-        ):
+        if not (codigo_sistema1 and nome_perfil1 and codigo_sistema2 and nome_perfil2):
             tk.messagebox.showwarning("Aviso", "Por favor, preencha todos os campos.")
             return
 
-        else:
-            data_adicao = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            self.salvar_matriz_sod_em_csv(
-                codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2
-            )
-            self.tree_matriz_sod_consulta.insert(
-                "",
-                tk.END,
-                values=(
-                    data_adicao,
-                    codigo_sistema1,
-                    nome_perfil1,
-                    codigo_sistema2,
-                    nome_perfil2,
-                ),
-            )
+        data_adicao = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-            self.codigo_sistema1_entry.delete(0, tk.END)
-            self.nome_perfil1_entry.delete(0, tk.END)
-            self.codigo_sistema2_entry.delete(0, tk.END)
-            self.nome_perfil2_entry.delete(0, tk.END)
+        self.salvar_matriz_sod_em_csv(
+            codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2
+        )
+        self.tree_matriz_sod_consulta.insert(
+            "",
+            tk.END,
+            values=(
+                data_adicao,
+                codigo_sistema1,
+                nome_perfil1,
+                codigo_sistema2,
+                nome_perfil2,
+            ),
+        )
+
+        self.codigo_sistema1_entry.delete(0, tk.END)
+        self.nome_perfil1_entry.delete(0, tk.END)
+        self.codigo_sistema2_entry.delete(0, tk.END)
+        self.nome_perfil2_entry.delete(0, tk.END)
 
     def salvar_matriz_sod_em_csv(
         self, codigo_sistema1, nome_perfil1, codigo_sistema2, nome_perfil2
     ):
+        """Salva os dados inseridos na aba5 através adicionar_perfis_conflitantes
+        em matriz_sod.csv."""
         data_adicao = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         csv_path = os.path.join(self.script_dir, "matriz_sod.csv")
         with open(csv_path, "a", newline="", encoding="utf-8") as arquivo_csv:
@@ -325,6 +340,7 @@ class MatrizSoDApp:
             )
 
     def criar_conteudo_aba6(self):
+        """Aba Consulta da Matriz SoD"""
         label = tk.Label(self.tab6, text="Consulta da Matriz SoD")
         label.pack(padx=10, pady=10)
 
@@ -354,6 +370,7 @@ class MatrizSoDApp:
         self.carregar_dados_matriz_sod_csv()
 
     def carregar_dados_matriz_sod_csv(self):
+        """Carrega os dados inseridos em matriz_sod.csv ao iniciar o programa"""
         try:
             csv_path = os.path.join(self.script_dir, "matriz_sod.csv")
             with open(csv_path, "r", encoding="utf-8") as arquivo:
@@ -389,6 +406,7 @@ class MatrizSoDApp:
             pass
 
     def criar_conteudo_aba7(self):
+        """Aba Cadastro dos usuários e Perfis"""
         label = tk.Label(self.tab7, text="Cadastro dos Usuários e Perfis")
         label.pack(padx=10, pady=10)
 
@@ -417,6 +435,7 @@ class MatrizSoDApp:
         adicionar_cadastro_button.pack(padx=10, pady=10)
 
     def adicionar_cadastro(self):
+        """Botão Adicionar Cadastro de Usuário e Perfil"""
         cpf = self.cpf_entry.get()
         codigo_sistema = self.codigo_sistema_entry.get()
         nome_perfil = self.nome_perfil_entry.get()
@@ -450,12 +469,14 @@ class MatrizSoDApp:
                 self.nome_perfil_entry.delete(0, tk.END)
 
     def salvar_cadastro_em_csv(self, cpf, codigo_sistema, nome_perfil, data_adicao):
+        """Salva os dados inseridos na aba6 através de adicionar_cadastro em cadastro.csv."""
         csv_path = os.path.join(self.script_dir, "cadastro.csv")
         with open(csv_path, "a", newline="", encoding="utf-8") as arquivo_csv:
             escritor = csv.writer(arquivo_csv)
             escritor.writerow([data_adicao, cpf, codigo_sistema, nome_perfil])
 
     def carregar_dados_cadastro_csv(self):
+        "Carrega os dados inseridos em cadastro.csv ao iniciar o programa."
         try:
             csv_path = os.path.join(self.script_dir, "cadastro.csv")
             with open(csv_path, "r", encoding="utf-8") as arquivo:
@@ -477,6 +498,7 @@ class MatrizSoDApp:
             pass
 
     def criar_conteudo_aba8(self):
+        """Aba Consulta dos usuários e seus Perfis"""
         label = tk.Label(self.tab8, text="Consulta dos Usuários e seus Perfis")
         label.pack(padx=10, pady=10)
 
@@ -498,6 +520,7 @@ class MatrizSoDApp:
         self.carregar_dados_cadastro_csv()
 
     def verificar_conflitos(self, codigo_sistema, nome_perfil):
+        """Verifica se usuário já está cadastrado."""
         for item in self.tree_matriz_sod_consulta.get_children():
             values = self.tree_matriz_sod_consulta.item(item, "values")
             if values[1] == codigo_sistema and values[2] == nome_perfil:
@@ -505,6 +528,8 @@ class MatrizSoDApp:
         return False
 
     def verificar_cpf_perfil_conflito(self, cpf, nome_perfil):
+        """Verifica se há conflito de perfis, utilizando-se de lógica estabelecida
+        em verificar_conflito_matriz_sod"""
         for item in self.tree_cadastro_consulta.get_children():
             if self.tree_cadastro_consulta.item(item, "values")[1] == cpf:
                 perfil_usuario = self.tree_cadastro_consulta.item(item, "values")[3]
@@ -513,6 +538,8 @@ class MatrizSoDApp:
         return False
 
     def verificar_conflito_matriz_sod(self, nome_perfil1, nome_perfil2):
+        """Verifica se há conflitos consultando matriz_sod.csv e verificando se
+        nome_perfil1 e nome_perfil2 está na mesma linha"""
         try:
             with open("./matriz_sod.csv", "r", encoding="utf-8") as arquivo_csv:
                 leitor = csv.reader(arquivo_csv)
@@ -524,6 +551,7 @@ class MatrizSoDApp:
         return False
 
     def criar_conteudo_aba9(self):
+        """Aba Excluir Dados"""
         label = tk.Label(self.tab9, text="Excluir Dados")
         label.pack(padx=10, pady=10)
 
@@ -535,6 +563,7 @@ class MatrizSoDApp:
         excluir_button.pack(padx=10, pady=10)
 
     def excluir_todos_os_dados(self):
+        """Mensagem de confirmação de exclusão de dados"""
         resposta = messagebox.askyesno(
             "Confirmar Exclusão",
             "Todos os dados serão excluídos. Tem certeza que deseja efetuar a exclusão?",
@@ -558,24 +587,30 @@ class MatrizSoDApp:
             self.limpar_arvore_consulta(self.tree_cadastro_consulta)
 
     def excluir_dados_csv(self, csv_path):
+        """Apaga os dados dos arquivos .csv"""
         if os.path.exists(csv_path):
             os.remove(csv_path)
 
     def limpar_arvore_consulta(self, tree):
+        """Apaga os dados da Treeview das abas de consulta (2, 4, 6 e 8)"""
         for item in tree.get_children():
             tree.delete(item)
 
+    # O método não está sendo usado mais, utilizei para limpar o cache e
+    # evitar erros enquanto testava o programa.
     def cleanup_temporary_files(self):
+        """Limpa os arquivos temporários"""
         temp_files = ["sistema.csv", "perfil.csv", "matriz_sod.csv", "cadastro.csv"]
         for file_name in temp_files:
             file_path = os.path.join(self.script_dir, file_name)
             if os.path.exists(file_path):
-                with open(file_path, "r") as file:
+                with open(file_path, "r", encoding="utf-8") as file:
                     pass
                 os.remove(file_path)
 
 
 def main():
+    """Ponto de entrada do app, dificil explicar, muito importante."""
     root = tk.Tk()
     app = MatrizSoDApp(root)
     root.mainloop()
