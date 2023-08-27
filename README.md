@@ -1,4 +1,4 @@
-# Miss_o_Certif_Mundo_1_2023_2
+# Missao Certificação Mundo 1
 Projeto referente a missão de certificação do Mundo 1 - Dev Full Stack
 
 O projeto requer que o usuario disponha de uma IDE funcional com python instalado.
