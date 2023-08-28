@@ -4,14 +4,13 @@ Projeto referente a missão de certificação do Mundo 1 - Dev Full Stack
 O projeto requer que o usuario disponha de uma IDE funcional com python instalado.
 O projeto foi desenvolvido usando o VSCode como IDE.
 Também serao necessarias as seguintes bibliotecas para seu funcionamento:
-import os
-import sys
-import locale
-import tkinter as tk
-from tkinter import ttk, messagebox
-import csv
-import datetime
-import pandas as pd
+#import sys
+#import locale
+#import tkinter as tk
+#from tkinter import ttk, messagebox
+#import csv
+#import datetime
+
 Note que algumas dessas bibliotecas ja vem embutidas com o python.
 
 O programa também ja esta pronto para ser convertido em um .exe. Sugiro o cx_Freeze, que também requer instalaçao.
